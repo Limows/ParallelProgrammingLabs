@@ -1,0 +1,14 @@
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\bin\Debug\netcoreapp3.1\SteepestDescent.exe
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\bin\Debug\netcoreapp3.1\SteepestDescent.deps.json
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\bin\Debug\netcoreapp3.1\SteepestDescent.runtimeconfig.json
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\bin\Debug\netcoreapp3.1\SteepestDescent.runtimeconfig.dev.json
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\bin\Debug\netcoreapp3.1\SteepestDescent.dll
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\bin\Debug\netcoreapp3.1\SteepestDescent.pdb
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\obj\Debug\netcoreapp3.1\SteepestDescent.csproj.AssemblyReference.cache
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\obj\Debug\netcoreapp3.1\SteepestDescent.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\obj\Debug\netcoreapp3.1\SteepestDescent.AssemblyInfoInputs.cache
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\obj\Debug\netcoreapp3.1\SteepestDescent.AssemblyInfo.cs
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\obj\Debug\netcoreapp3.1\SteepestDescent.csproj.CoreCompileInputs.cache
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\obj\Debug\netcoreapp3.1\SteepestDescent.dll
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\obj\Debug\netcoreapp3.1\SteepestDescent.pdb
+C:\Users\Limows\source\repos\SteepestDescent\SteepestDescent\obj\Debug\netcoreapp3.1\SteepestDescent.genruntimeconfig.cache
