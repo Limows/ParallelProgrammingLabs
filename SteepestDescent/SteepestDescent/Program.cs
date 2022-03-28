@@ -13,19 +13,18 @@ namespace SteepestDescent
             double[] r = new double[n]; //антиградиент
 
             //начальное приближение
-            x = b;
-            r = b;
+            b.CopyTo(x, 0);
+            b.CopyTo(r, 0);
 
-            while(Math.Sqrt(ScalarProduct(r,r)) < Tolerance) //вторая норма верктора
+            while(Math.Sqrt(ScalarProduct(r,r)) > Tolerance) //вторая норма верктора
             {
                 Alpha = ScalarProduct(r, r) / ScalarProduct(r, MatrixVectorProduct(A, r));
+                r = GradF(in A, in x, in b);
 
                 for (int i = 0; i < n; i++)
                 {
                     x[i] = x[i] + Alpha * r[i];
                 }
-
-                r = GradF(in A, in x, in b);
             }    
 
             return x;
@@ -45,7 +44,7 @@ namespace SteepestDescent
                 r[i] = b[i];
             }
 
-            while (Math.Sqrt(ScalarProduct(r, r, ThreadsNumber)) < Tolerance) //вторая норма верктора
+            while (Math.Sqrt(ScalarProduct(r, r, ThreadsNumber)) > Tolerance) //вторая норма верктора
             {
                 Alpha = ScalarProduct(r, r, ThreadsNumber) / ScalarProduct(r, MatrixVectorProduct(A, r, ThreadsNumber), ThreadsNumber);
 
@@ -136,7 +135,7 @@ namespace SteepestDescent
             {
                 using (StreamWriter stream = File.CreateText(FileName))
                 {
-                    foreach (int number in x)
+                    foreach (double number in x)
                     {
                         Console.WriteLine(number);
                         stream.WriteLine(number);
@@ -147,7 +146,7 @@ namespace SteepestDescent
             {
                 Console.WriteLine("Unable to create output file");
 
-                foreach (int number in x)
+                foreach (double number in x)
                 {
                     Console.WriteLine(number);
                 }
@@ -193,8 +192,8 @@ namespace SteepestDescent
                 throw new InvalidOperationException("Matrices cannot be multiplied");
 
             for (int i = 0; i < n; i++)
-                for (int k = 0; k < n; k++)
-                    x[i] += A[i, k] * x[k];
+                for (int j = 0; j < n; j++)
+                    Product[i] += A[i, j] * x[j];
 
             return Product;
         }
@@ -210,8 +209,8 @@ namespace SteepestDescent
                 throw new InvalidOperationException("Matrices cannot be multiplied");
 
             for (int i = 0; i < n; i++)
-                for (int k = 0; k < n; k++)
-                    x[i] += A[i, k] * x[k];
+                for (int j = 0; j < n; j++)
+                    Product[i] += A[i, j] * x[j];
 
             return Product;
         }
@@ -222,7 +221,7 @@ namespace SteepestDescent
             double[] y = MatrixVectorProduct(A, x);
 
             for (int i = 0; i < n; i++)
-                y[i] = -y[i] + b[i];
+                y[i] = b[i] - y[i];
 
             return y;
         }
@@ -234,14 +233,14 @@ namespace SteepestDescent
             double[] y = MatrixVectorProduct(A, x, ThreadsNumber);
 
             for (int i = 0; i < n; i++)
-                y[i] = -y[i] + b[i];
+                y[i] = b[i] - y[i];
 
             return y;
         }
 
         public static void Main(string[] args)
         {
-            double Tolerance = 1e-6; //допуск
+            double Tolerance = 0.1; //допуск
             double[] x;
             string FileName;
             string OutFileName;
@@ -271,7 +270,7 @@ namespace SteepestDescent
 
             try
             {
-                ReadSLAE(out double[,] A, out double[] b, n + 1, FileName);
+                ReadSLAE(out double[,] A, out double[] b, n, FileName);
                 if (TestSymmetry(in A))
                 {
                     if (TestSylvester(in A))

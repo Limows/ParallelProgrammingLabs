@@ -12,12 +12,17 @@ namespace MatrixGenerator
             Random RandSeed = new Random(Seed);
             Random RandNumber = new Random(RandSeed.Next());
 
-            Max = Max * 1000;
-            Min = Min * 1000;
+            Max = Convert.ToInt32(Math.Sqrt(Max));
+            Min = Convert.ToInt32(Math.Sqrt(Min));
 
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
-                    Matrix[i, j] = RandNumber.Next(Min, Max) / 1000.0;
+                {
+                    int RandInt = RandNumber.Next(Min, Max);
+                    double RandDouble = RandNumber.NextDouble();
+
+                    Matrix[i, j] = RandInt * RandDouble;
+                }
 
             return Matrix;
         }
@@ -28,11 +33,13 @@ namespace MatrixGenerator
             Random RandSeed = new Random(Seed);
             Random RandNumber = new Random(RandSeed.Next());
 
-            Max = Max * 1000;
-            Min = Min * 1000;
-
             for (int i = 0; i < n; i++)
-                Vector[i] = RandNumber.Next(Min, Max) / 1000;
+            {
+                int RandInt = RandNumber.Next(Min, Max);
+                double RandDouble = RandNumber.NextDouble();
+
+                Vector[i] = RandInt * RandDouble;
+            }
 
             return Vector;
         }
@@ -40,17 +47,19 @@ namespace MatrixGenerator
         public static void WriteToFile(in double[,] Matrix, in double[] Vector, string FileName)
         {
             int n = Vector.Length;
-            StringBuilder Str = new StringBuilder();
+            StringBuilder Str;
             string str;
 
             using (StreamWriter Writer = File.CreateText(FileName))
             {
                 for (int i = 0; i < n; i++)
-                {
+                {   
+                    Str = new StringBuilder();
+
                     for (int j = 0; j < n; j++)
                         Str.Append(Matrix[i, j].ToString("0.###") + ";");
 
-                    Str.Append(Vector[i]);
+                    Str.Append(Vector[i].ToString("0.###"));
                     str = Str.ToString();
 
                     Console.WriteLine(str);
