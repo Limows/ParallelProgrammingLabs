@@ -12,9 +12,6 @@ namespace MatrixGenerator
             Random RandSeed = new Random(Seed);
             Random RandNumber = new Random(RandSeed.Next());
 
-            Max = Convert.ToInt32(Math.Sqrt(Max));
-            Min = Convert.ToInt32(Math.Sqrt(Min));
-
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                 {
@@ -32,6 +29,9 @@ namespace MatrixGenerator
             double[] Vector = new double[n];
             Random RandSeed = new Random(Seed);
             Random RandNumber = new Random(RandSeed.Next());
+
+            Max = Max * n;
+            Min = Min * n;
 
             for (int i = 0; i < n; i++)
             {

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
+using System.Threading;
 
 namespace SteepestDescent
 {
@@ -11,12 +13,14 @@ namespace SteepestDescent
             double Alpha; //параметр альфа
             double[] x = new double[n];
             double[] r = new double[n]; //антиградиент
+            double residual;
 
             //начальное приближение
             b.CopyTo(x, 0);
             b.CopyTo(r, 0);
+            residual = Math.Sqrt(ScalarProduct(r, r));
 
-            while(Math.Sqrt(ScalarProduct(r,r)) > Tolerance) //вторая норма верктора
+            while (residual > Tolerance) //вторая норма верктора
             {
                 Alpha = ScalarProduct(r, r) / ScalarProduct(r, MatrixVectorProduct(A, r));
                 r = GradF(in A, in x, in b);
@@ -25,6 +29,8 @@ namespace SteepestDescent
                 {
                     x[i] = x[i] + Alpha * r[i];
                 }
+
+                residual = Math.Sqrt(ScalarProduct(r, r));
             }    
 
             return x;
@@ -245,6 +251,8 @@ namespace SteepestDescent
             string FileName;
             string OutFileName;
             int n;
+            Stopwatch Watch = new Stopwatch();
+            TimeSpan Time;
 
             if (args.Length > 1)
             {
@@ -275,8 +283,28 @@ namespace SteepestDescent
                 {
                     if (TestSylvester(in A))
                     {
+                        Watch.Start();
+
                         x = SteepestDescent(ref A, ref b, Tolerance);
+
+                        Watch.Stop();
+                        Time = Watch.Elapsed;
+
                         WriteRoots(in x, OutFileName);
+
+                        Console.WriteLine
+                        (
+                            "\nRunTime: " +
+                            String.Format
+                            (
+                                "{0:00}:{1:00}:{2:00}.{3:00}",
+                                Time.Hours,
+                                Time.Minutes,
+                                Time.Seconds,
+                                Time.Milliseconds / 10
+                            )
+                        );
+                        Console.WriteLine("Ticks: " + Time.Ticks);
                     }
                     else
                         Console.WriteLine("\nMatrix does not satisfy the Sylvester criterion");
