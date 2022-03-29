@@ -2,6 +2,7 @@
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SteepestDescent
 {
@@ -18,11 +19,11 @@ namespace SteepestDescent
             //начальное приближение
             b.CopyTo(x, 0);
             b.CopyTo(r, 0);
-            residual = Math.Sqrt(ScalarProduct(r, r));
+            residual = Math.Sqrt(ScalarProduct(in r, in r)); //вторая норма верктора
 
-            while (residual > Tolerance) //вторая норма верктора
+            while (residual > Tolerance)
             {
-                Alpha = ScalarProduct(r, r) / ScalarProduct(r, MatrixVectorProduct(A, r));
+                Alpha = ScalarProduct(in r, in r) / ScalarProduct(in r, MatrixVectorProduct(A, in r));
                 r = GradF(in A, in x, in b);
 
                 for (int i = 0; i < n; i++)
@@ -30,36 +31,41 @@ namespace SteepestDescent
                     x[i] = x[i] + Alpha * r[i];
                 }
 
-                residual = Math.Sqrt(ScalarProduct(r, r));
+                residual = Math.Sqrt(ScalarProduct(in r, in r));
             }    
 
             return x;
         }
 
-        public static double[] SteepestDescent(ref double[,] A, ref double[] b, double Tolerance, int ThreadsNumber)
+        //параллельная реализация
+        public static double[] SteepestDescent(double[,] A, double[] b, double Tolerance, int ThreadsNumber)
         {
             int n = b.Length;
             double Alpha; //параметр альфа
             double[] x = new double[n];
             double[] r = new double[n];
+            double residual;
 
             //начальное приближение
-            for (int i = 0; i < n; i++)
+            Parallel.For(0, n, i =>
             {
                 x[i] = b[i];
                 r[i] = b[i];
-            }
+            });
 
-            while (Math.Sqrt(ScalarProduct(r, r, ThreadsNumber)) > Tolerance) //вторая норма верктора
+            residual = Math.Sqrt(ScalarProduct(r, r, ThreadsNumber)); //вторая норма верктора
+
+            while (residual > Tolerance)
             {
                 Alpha = ScalarProduct(r, r, ThreadsNumber) / ScalarProduct(r, MatrixVectorProduct(A, r, ThreadsNumber), ThreadsNumber);
+                r = GradF(A, x, b, ThreadsNumber);
 
-                for (int i = 0; i < n; i++)
+                Parallel.For(0, n, i =>
                 {
                     x[i] = x[i] + Alpha * r[i];
-                }
+                });
 
-                r = GradF(in A, in x, in b, ThreadsNumber);
+                residual = Math.Sqrt(ScalarProduct(r, r, ThreadsNumber));
             }
 
             return x;
@@ -175,16 +181,22 @@ namespace SteepestDescent
 
 
         //параллельная реализация
-        public static double ScalarProduct(in double[] x, in double[] y, int ThreadsNumber)
+        public static double ScalarProduct(double[] x, double[] y, int ThreadsNumber)
         {
             double Product = 0;
             int n = x.Length;
+            ParallelOptions Options = new ParallelOptions();
+
+            Options.MaxDegreeOfParallelism = ThreadsNumber;
 
             if (y.Length != n)
                 throw new InvalidOperationException("Vectors cannot be multiplied");
 
-            for (int i = 0; i < n; i++)
+            //Parallel.For(0, n, Options, i =>
+            Parallel.For(0, n, i =>
+            {
                 Product += x[i] * y[i];
+            });
 
             return Product;
         }
@@ -206,7 +218,7 @@ namespace SteepestDescent
 
 
         //параллельная реализация
-        public static double[] MatrixVectorProduct(in double[,] A, in double[] x, int ThreadsNumber)
+        public static double[] MatrixVectorProduct(double[,] A, double[] x, int ThreadsNumber)
         {
             int n = x.Length;
             double[] Product = new double[n];
@@ -214,9 +226,11 @@ namespace SteepestDescent
             if (A.GetLength(0) != n)
                 throw new InvalidOperationException("Matrices cannot be multiplied");
 
-            for (int i = 0; i < n; i++)
+            Parallel.For(0, n, i =>
+            {
                 for (int j = 0; j < n; j++)
                     Product[i] += A[i, j] * x[j];
+            });
 
             return Product;
         }
@@ -233,13 +247,15 @@ namespace SteepestDescent
         }
 
         //параллельная реализация
-        public static double[] GradF(in double[,] A, in double[] x, in double[] b, int ThreadsNumber)
+        public static double[] GradF(double[,] A, double[] x, double[] b, int ThreadsNumber)
         {
             int n = x.Length;
             double[] y = MatrixVectorProduct(A, x, ThreadsNumber);
 
-            for (int i = 0; i < n; i++)
+            Parallel.For(0, n, i =>
+            {
                 y[i] = b[i] - y[i];
+            });
 
             return y;
         }
@@ -285,7 +301,8 @@ namespace SteepestDescent
                     {
                         Watch.Start();
 
-                        x = SteepestDescent(ref A, ref b, Tolerance);
+                        //x = SteepestDescent(ref A, ref b, Tolerance);
+                        x = SteepestDescent(A, b, Tolerance, 4);
 
                         Watch.Stop();
                         Time = Watch.Elapsed;
