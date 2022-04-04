@@ -295,14 +295,15 @@ namespace SteepestDescent
             try
             {
                 ReadSLAE(out double[,] A, out double[] b, n, FileName);
+
                 if (TestSymmetry(in A))
                 {
                     if (TestSylvester(in A))
                     {
                         Watch.Start();
 
-                        //x = SteepestDescent(ref A, ref b, Tolerance);
-                        x = SteepestDescent(A, b, Tolerance, 4);
+                        x = SteepestDescent(ref A, ref b, Tolerance);
+                        //x = SteepestDescent(A, b, Tolerance, 4);
 
                         Watch.Stop();
                         Time = Watch.Elapsed;
@@ -333,7 +334,6 @@ namespace SteepestDescent
             {
                 Console.WriteLine("\nCritical error while processing. Check your SLAE file");
             }
-
         }
     }
 }

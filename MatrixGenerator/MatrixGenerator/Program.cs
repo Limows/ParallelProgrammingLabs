@@ -13,8 +13,7 @@ namespace MatrixGenerator
             Random RandSeed = new Random(Seed);
             Random RandNumber = new Random(RandSeed.Next());
 
-            Parallel.For(0, n, i =>
-            {
+            for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                 {
                     int RandInt = RandNumber.Next(Min, Max);
@@ -22,7 +21,6 @@ namespace MatrixGenerator
 
                     Matrix[i, j] = RandInt * RandDouble;
                 }
-            });
 
             return Matrix;
         }
@@ -33,16 +31,13 @@ namespace MatrixGenerator
             Random RandSeed = new Random(Seed);
             Random RandNumber = new Random(RandSeed.Next());
 
-            Max = Max * n;
-            Min = Min * n;
-
-            Parallel.For(0, n, i =>
-            {
+            for (int i = 0; i < n; i++)
+            {    
                 int RandInt = RandNumber.Next(Min, Max);
                 double RandDouble = RandNumber.NextDouble();
 
                 Vector[i] = RandInt * RandDouble;
-            });
+            }
 
             return Vector;
         }
@@ -77,18 +72,14 @@ namespace MatrixGenerator
             double[,] Transposed = new double[n, n];
             double[,] PDMatrix = new double[n, n];
 
-            Parallel.For(0, n, i =>
-            {
+            for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                     Transposed[i, j] = Matrix[j, i];
-            });
 
-            Parallel.For(0, n, i =>
-            {
+            for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                     for (int k = 0; k < n; k++)
                         PDMatrix[i, j] += Transposed[i, k] * Matrix[k, j];
-            });
 
             return PDMatrix;
         }
