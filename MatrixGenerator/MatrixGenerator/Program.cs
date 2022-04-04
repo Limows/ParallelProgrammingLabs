@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MatrixGenerator
 {
@@ -12,7 +13,8 @@ namespace MatrixGenerator
             Random RandSeed = new Random(Seed);
             Random RandNumber = new Random(RandSeed.Next());
 
-            for (int i = 0; i < n; i++)
+            Parallel.For(0, n, i =>
+            {
                 for (int j = 0; j < n; j++)
                 {
                     int RandInt = RandNumber.Next(Min, Max);
@@ -20,6 +22,7 @@ namespace MatrixGenerator
 
                     Matrix[i, j] = RandInt * RandDouble;
                 }
+            });
 
             return Matrix;
         }
@@ -33,13 +36,13 @@ namespace MatrixGenerator
             Max = Max * n;
             Min = Min * n;
 
-            for (int i = 0; i < n; i++)
+            Parallel.For(0, n, i =>
             {
                 int RandInt = RandNumber.Next(Min, Max);
                 double RandDouble = RandNumber.NextDouble();
 
                 Vector[i] = RandInt * RandDouble;
-            }
+            });
 
             return Vector;
         }
@@ -68,20 +71,24 @@ namespace MatrixGenerator
             }
         }
 
-        public static double[,] MakeMatrixPD(in double[,] Matrix)
+        public static double[,] MakeMatrixPD(double[,] Matrix)
         {
             int n = Matrix.GetLength(0);
             double[,] Transposed = new double[n, n];
             double[,] PDMatrix = new double[n, n];
 
-            for (int i = 0; i < n; i++)
+            Parallel.For(0, n, i =>
+            {
                 for (int j = 0; j < n; j++)
                     Transposed[i, j] = Matrix[j, i];
+            });
 
-            for (int i = 0; i < n; i++)
+            Parallel.For(0, n, i =>
+            {
                 for (int j = 0; j < n; j++)
                     for (int k = 0; k < n; k++)
                         PDMatrix[i, j] += Transposed[i, k] * Matrix[k, j];
+            });
 
             return PDMatrix;
         }
@@ -128,7 +135,7 @@ namespace MatrixGenerator
             Matrix = RandMatrixGen(n, Max, Min, Seed);
             Vector = RandVectorGen(n, Max, Min, Seed);
 
-            Matrix = MakeMatrixPD(in Matrix);
+            Matrix = MakeMatrixPD(Matrix);
 
             WriteToFile(in Matrix, in Vector, FileName);
 
